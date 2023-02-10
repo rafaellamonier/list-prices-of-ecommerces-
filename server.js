@@ -17,22 +17,36 @@ server.get('/', async (req, res) => {
     data[0] = titlePage;
 
     // get list product Name
-    const listProductsName = await page.$$('.promotion-item__description')
-    const lenListOfProductName = listProductsName.length
+    const listProductsContainer = await page.$$('.promotion-item__link-container')
+    const lenListOfProductName = listProductsContainer.length
 
     for (let i = 0; i < lenListOfProductName; i++) {
+        // get item product
+        const linkProductElement = await (await listProductsContainer[i].getProperty('href'))
+        const link = await linkProductElement.jsonValue()
 
         // get title product
-        const titleProductElement = await (await listProductsName[i].$('.promotion-item__title'));
+        const titleProductElement = await (await listProductsContainer[i].$('.promotion-item__title'));
         const textTitleProduct = await titleProductElement.getProperty('textContent')
         const title = await textTitleProduct.jsonValue()
 
         // get price product
+        const priceProductElement = await (await listProductsContainer[i].$('.andes-money-amount__fraction'))
+        const textPriceProduct = await priceProductElement.getProperty('textContent')
+        const price = await textPriceProduct.jsonValue()
+
+        // get image product
+        const imageProductElement = await (await listProductsContainer[i].$('.promotion-item__img'))
+        const imageProduct = await imageProductElement.getProperty('src')
+        const image = await imageProduct.jsonValue()
 
 
         // set data product
         data.push({
-            titleProduct: title
+            linkProduct: link,
+            titleProduct: title,
+            priceProduct: price,
+            imageLink: image
         });
     }
 
