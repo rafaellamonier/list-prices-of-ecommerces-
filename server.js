@@ -2,7 +2,7 @@ import express from 'express';
 import puppeteer from 'puppeteer';
 
 const server = express();
-const port = 3001;
+const port = 3002;
 
 let data = [];
 
@@ -38,13 +38,20 @@ server.get('/', async (req, res) => {
         // get image product
         const imageProductElement = await (await listProductsContainer[i].$('.promotion-item__img'))
         const imageProduct = await imageProductElement.getProperty('src')
-        const image = await imageProduct.jsonValue()
+        const imageAux = await imageProduct.jsonValue()
+        let image
+
+        if (!imageAux.includes('data:image')) {
+            image = imageAux
+        } else {
+            image = await imageProduct
+        }
 
         // set data product
         data.push({
             linkProduct: link,
             titleProduct: title,
-            priceProduct: price,
+            priceProduct: `R$ ${price}`,
             imageLink: image
         });
     }
@@ -54,7 +61,6 @@ server.get('/', async (req, res) => {
     res.send(data);
     data = []
 });
-
 
 // get list of stores
 server.get('/lojas', (req, res) => {
