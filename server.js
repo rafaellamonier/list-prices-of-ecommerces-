@@ -6,7 +6,7 @@ const port = 3001;
 
 let data = [];
 
-// get all products
+// get all products of ML
 server.get('/', async (req, res) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -40,7 +40,6 @@ server.get('/', async (req, res) => {
         const imageProduct = await imageProductElement.getProperty('src')
         const image = await imageProduct.jsonValue()
 
-
         // set data product
         data.push({
             linkProduct: link,
@@ -57,13 +56,14 @@ server.get('/', async (req, res) => {
 });
 
 
-// get list of E-commerces
+// get list of stores
 server.get('/lojas', (req, res) => {
     const listOfStores = []
     listOfStores[0] = data[0]
     res.send(listOfStores)
 })
 
+// list all products of all stores
 server.listen(port, () => {
     console.log(`Server runing in port ${port}`);
 });
